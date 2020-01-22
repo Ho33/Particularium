@@ -1,11 +1,12 @@
 import { Teacher } from './../../core/model/teacher';
 import { Student } from './../../core/model/student';
 import { Injectable } from '@angular/core';
+
 import { Router } from '@angular/router';
 import { User } from 'src/app/interfaces/User';
 import { AlertController } from '@ionic/angular';
-import { DataService } from '../data/data.service';
 import { AuthService } from '../auth/auth.service';
+import { DataService } from '../data/data.service';
 
 @Injectable({
 	providedIn: 'root'
@@ -34,6 +35,8 @@ export class SingUpServiceService {
 	}
 
 	async addStudent(student: Student) {
+		student.email=this.userReg.email;
+		student.password=this.userReg.password;
 		this.afAuth.setUser(this.userReg);
 		return await this.afStore
 			.addUserProfile(this.afAuth.getCurrentUserUid(), student)
@@ -46,6 +49,8 @@ export class SingUpServiceService {
 	}
 
 	async addTeacher(teacher: Teacher) {
+		teacher.email=this.userReg.email;
+		teacher.password=this.userReg.password;
 		this.afAuth.setUser(this.userReg);
 		return await this.afStore
 			.addUserProfile(this.afAuth.getCurrentUserUid(), teacher)
@@ -58,7 +63,6 @@ export class SingUpServiceService {
 	}
 
 	async addStudentId() {
-
 		this.afAuth.setUser(this.userReg);
 		console.log(this.userReg);
 		return await this.afStore

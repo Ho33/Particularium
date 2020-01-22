@@ -4,35 +4,41 @@
    
 }
 .contenedorBotones{
-    margin-top: 20px;
+    margin-top: 45px;
     text-align: center;
     letter-spacing: 0.25em;
     font-size: 24px;
     padding: 4px 10px;
-   
-    background-color: #0186af;
+    background-color: transparent;
+  
    
    
 }
 .buttonInicioLogin{
-    width: 70%;
+    font-size: 20px;
+    width: 75%;
+    height: 70px;
     background: #003d99;
     border: 2px double white;
+    font-family: fantasy;
 }
 .buttonInicioSignUp{
-    width: 70%;
+    font-size: 20px;
+    width: 75%;
+    height: 70px;
     background: #fff47e;
-    border: 2px double white;
+    border: 2px double rgb(0, 0, 0);
     color: black;
+    font-family: fantasy;
 }
 
 .imagenParticularium{
-    width: 32%;
+    margin-top: 10px;
+    width: 50%;
    
 }
-
-.footer{
-    font-size: 12.5px;
-    text-align: center;
-     color: #D1D1D1;
+.slogan{
+  
+    margin-bottom: 10px;
+    font: oblique bold 120% cursive;
 }

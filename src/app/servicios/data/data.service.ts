@@ -3,25 +3,27 @@ import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/fire
 import { Injectable } from '@angular/core';
 import { Student } from './../../core/model/student';
 import { map } from 'rxjs/operators';
+import { User } from 'src/app/interfaces/User';
+
 
 @Injectable({
 	providedIn: 'root'
 })
 export class DataService {
-	private students: AngularFirestoreCollection<String>;
-	private teachers: AngularFirestoreCollection<String>;
+	private students: AngularFirestoreCollection<User>;
+	private teachers: AngularFirestoreCollection<User>;
 
 	constructor(private afStoreSv: AngularFirestore) {
-		this.students = this.afStoreSv.collection<String>('students');
-		this.teachers = this.afStoreSv.collection<String>('teachers');
+		this.students = this.afStoreSv.collection<User>('students');
+		this.teachers = this.afStoreSv.collection<User>('teachers');
 	}
 
 	getTeacher(idUser: string) {
-		return this.teachers.doc<String>(idUser).valueChanges();
+		return this.teachers.doc<User>(idUser).get();
 	}
 
 	getStudent(idUser: string) {
-		return this.students.doc<String>(idUser).valueChanges();
+		return this.students.doc<User>(idUser).get();
 	}
 
 	addUserProfile(idUser: string, user: Teacher | Student) {
@@ -53,11 +55,15 @@ export class DataService {
 	}
 
 	addTeacherId(idUser: string) {
-		return this.afStoreSv.collection('teachers').doc(idUser).set(Object.assign({0}, idUser));
+		let user: User = {}
+		user.email = idUser;
+		return this.afStoreSv.collection('teachers').doc(idUser).set(user);
 	}
 
 	addStudentId(idUser: string) {
-		return this.afStoreSv.collection('students').doc(idUser).set(Object.assign({0}, idUser));
+		let user: User = {}
+		user.email = idUser;
+		return this.afStoreSv.collection('students').doc(idUser).set(user);
 	}
 
 	isTeacher(idUser: string) {
@@ -71,7 +77,7 @@ export class DataService {
 				});
 			})
 			.catch(() => {
-				alert('error');
+				alert('error');			
 			});
 	}
 
@@ -90,7 +96,23 @@ export class DataService {
 				return false;
 			});
 	}
-
+	test(idUser: string) {
+		let user = this.afStoreSv.collection('teachers').doc(idUser).get();
+		return user
+			.toPromise()
+			.then((doc) => {
+				if (doc.exists) {
+					return doc.data();
+					console.log('Document data:', doc.data());
+				} else {
+					// doc.data() will be undefined in this case
+					console.log('No such document!');
+				}
+			})
+			.catch(function(error) {
+				console.log('Error getting document:', error);
+			});
+	}
 	getProfile(idUser: string) {
 		let user = this.afStoreSv.collection('user').doc(idUser).get();
 		return user

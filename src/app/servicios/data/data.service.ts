@@ -1,29 +1,31 @@
+import { User } from './../../interfaces/User';
 import { Teacher } from './../../core/model/teacher';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import { Injectable } from '@angular/core';
 import { Student } from './../../core/model/student';
 import { map } from 'rxjs/operators';
-import { User } from 'src/app/interfaces/User';
 
 
 @Injectable({
 	providedIn: 'root'
 })
 export class DataService {
-	private students: AngularFirestoreCollection<User>;
-	private teachers: AngularFirestoreCollection<User>;
+	private students: AngularFirestoreCollection<string>;
+	private teachers: AngularFirestoreCollection<string>;
+	private users: AngularFirestoreCollection<unknown>;
 
 	constructor(private afStoreSv: AngularFirestore) {
-		this.students = this.afStoreSv.collection<User>('students');
-		this.teachers = this.afStoreSv.collection<User>('teachers');
+		this.students = this.afStoreSv.collection<string>('students');
+		this.teachers = this.afStoreSv.collection<string>('teachers');
+		this.users = this.afStoreSv.collection<unknown>('user');
 	}
 
 	getTeacher(idUser: string) {
-		return this.teachers.doc<User>(idUser).get();
+		return this.teachers.doc<string>(idUser).get();
 	}
 
 	getStudent(idUser: string) {
-		return this.students.doc<User>(idUser).get();
+		return this.students.doc<string>(idUser).get();
 	}
 
 	addUserProfile(idUser: string, user: Teacher | Student) {
@@ -82,37 +84,12 @@ export class DataService {
 	}
 
 	isStudent(idUser: string) {
-		return this.afStoreSv
-			.collection('students', (ref) => ref.where('idUser', '==', idUser))
-			.get()
-			.toPromise()
-			.then(function(querySnapshot) {
-				querySnapshot.forEach(function(doc) {
-					// doc.data() is never undefined for query doc snapshots
-					return true;
-				});
-			})
-			.catch(function(error) {
-				return false;
-			});
+		let iduser = this.afStoreSv
+		.collection('students', (ref) => ref.where(idUser, '==', 'idUser'))
+		.valueChanges({idUser})
+		return iduser;
 	}
-	test(idUser: string) {
-		let user = this.afStoreSv.collection('teachers').doc(idUser).get();
-		return user
-			.toPromise()
-			.then((doc) => {
-				if (doc.exists) {
-					return doc.data();
-					console.log('Document data:', doc.data());
-				} else {
-					// doc.data() will be undefined in this case
-					console.log('No such document!');
-				}
-			})
-			.catch(function(error) {
-				console.log('Error getting document:', error);
-			});
-	}
+
 	getProfile(idUser: string) {
 		let user = this.afStoreSv.collection('user').doc(idUser).get();
 		return user

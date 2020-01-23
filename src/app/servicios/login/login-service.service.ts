@@ -11,7 +11,7 @@ import { Subscription } from 'rxjs';
 })
 export class LoginServiceService {
 	private userReg: User = {};
-	private productSubscription: Subscription;
+	private uIdSubscription: Subscription;
 	constructor(private afAuth: AuthService, private afStore: DataService, private routesv: Router) {}
 
 	async logout() {
@@ -28,9 +28,12 @@ export class LoginServiceService {
 	}
 
 	async login() {
+		console.log('antes de la primera llamada');
 		this.afAuth.setUser(this.userReg);
+		//let student = this.afStore.isStudent(this.afAuth.getCurrentUserUid());
+		//let teacher = this.afStore.isStudent(this.afAuth.getCurrentUserUid());
 		if (await this.afAuth.login()) {
-			if (this.isTeacher() || this.isStudent()) {
+			if ((await this.isTeacher()) || (await this.isStudent())) {
 				this.routesv.navigateByUrl('/logged-in');
 			} else {
 				this.routesv.navigateByUrl('/tipo-usuario');
@@ -39,28 +42,30 @@ export class LoginServiceService {
 	}
 
 	private isTeacher(): boolean {
-		let result=false;
-		this.productSubscription = this.afStore.getTeacher(this.afAuth.getCurrentUserUid()).subscribe((data) => {
-      console.log(this.afAuth.getCurrentUserUid());
-      console.log(data.id);
-			if (data.id === this.afAuth.getCurrentUserUid()) {
-				result = false;
-			} 
-    });
-    console.log(result)
+		let result = false;
+		this.uIdSubscription = this.afStore.getTeacher(this.afAuth.getCurrentUserUid()).subscribe((data) => {
+			console.log(this.afAuth.getCurrentUserUid());
+			console.log(data.id);
+			let id: string = data.id;
+			let current: string = this.afAuth.getCurrentUserUid();
+			if (id === current) {
+				result = true;
+			}
+		});
+		console.log(result);
 		return result;
 	}
 
-	private isStudent():boolean {
-		let result=false;
-		this.productSubscription = this.afStore.getStudent(this.afAuth.getCurrentUserUid()).subscribe((data) => {
-      console.log(this.afAuth.getCurrentUserUid());
-      console.log(data.data.toString());
-			if (data.data.toString() !== undefined || data.data.toString() == this.afAuth.getCurrentUserUid()) {
+	private isStudent(): boolean {
+		let result = false;
+		this.uIdSubscription = this.afStore.getStudent(this.afAuth.getCurrentUserUid()).subscribe((data) => {
+			console.log(this.afAuth.getCurrentUserUid());
+			console.log(data.id);
+			if (data.id !== undefined || data.id == this.afAuth.getCurrentUserUid()) {
 				result = true;
-			} 
-    });
-    console.log(result)
+			}
+		});
+		console.log(result);
 		return result;
 	}
 

@@ -5,12 +5,14 @@ import { DataService } from '../data/data.service';
 import { Router } from '@angular/router';
 import { User } from 'src/app/interfaces/User';
 import { Subscription } from 'rxjs';
+import { isNullOrUndefined } from 'util';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class LoginServiceService {
 	private userReg: User = {};
+	private result: boolean = false;
 	private uIdSubscription: Subscription;
 	constructor(private afAuth: AuthService, private afStore: DataService, private routesv: Router) {}
 
@@ -28,45 +30,20 @@ export class LoginServiceService {
 	}
 
 	async login() {
-		console.log('antes de la primera llamada');
 		this.afAuth.setUser(this.userReg);
-		//let student = this.afStore.isStudent(this.afAuth.getCurrentUserUid());
-		//let teacher = this.afStore.isStudent(this.afAuth.getCurrentUserUid());
 		if (await this.afAuth.login()) {
-			if ((await this.isTeacher()) || (await this.isStudent())) {
-				this.routesv.navigateByUrl('/logged-in');
-			} else {
-				this.routesv.navigateByUrl('/tipo-usuario');
-			}
+			this.isMember();
 		}
 	}
 
-	private isTeacher(): boolean {
-		let result = false;
-		this.uIdSubscription = this.afStore.getTeacher(this.afAuth.getCurrentUserUid()).subscribe((data) => {
-			console.log(this.afAuth.getCurrentUserUid());
-			console.log(data.id);
-			let id: string = data.id;
-			let current: string = this.afAuth.getCurrentUserUid();
-			if (id === current) {
-				result = true;
+	isMember() {
+		this.afStore.isMember(this.afAuth.getCurrentUserUid()).then((data)=>{
+			if (data) {
+				this.routesv.navigateByUrl('/logged-in');
+			}else{
+				this.routesv.navigateByUrl('/tipo-usuario');
 			}
 		});
-		console.log(result);
-		return result;
-	}
-
-	private isStudent(): boolean {
-		let result = false;
-		this.uIdSubscription = this.afStore.getStudent(this.afAuth.getCurrentUserUid()).subscribe((data) => {
-			console.log(this.afAuth.getCurrentUserUid());
-			console.log(data.id);
-			if (data.id !== undefined || data.id == this.afAuth.getCurrentUserUid()) {
-				result = true;
-			}
-		});
-		console.log(result);
-		return result;
 	}
 
 	/**

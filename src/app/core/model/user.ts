@@ -8,7 +8,6 @@ export class User {
     constructor() {  
     }
 
-
     /**
      * Getter name
      * @return {string}
@@ -32,7 +31,6 @@ export class User {
     public get password(): string {
         return this._password;
     }
-
 
     /**
      * Getter email
@@ -66,7 +64,6 @@ export class User {
         this._password = value;
     }
 
-
     /**
      * Setter email
      * @param {string} value
@@ -75,22 +72,20 @@ export class User {
         this._email = value;
     }
 
-
     /**
      * Getter location
      * @return {Coordinates}
      */
 	public get location(): Coordinates {
 		return this._location;
-	}
-
+    }
+    
     /**
      * Setter location
      * @param {Coordinates} value
      */
+
 	public set location(value: Coordinates) {
 		this._location = value;
 	}
-
-
 }
